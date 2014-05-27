@@ -60,7 +60,7 @@ public class ExpressionParser {
 			if(ExpressionParser.isOperator(expression.peek())){
 				
 				//calculates the result of the operator and adds it to the stack
-				stack.push(ExpressionParser.calculate(expression.remove(), 
+				stack.push(ExpressionParser.calculate(expression.remove(),
 									stack.pop(), 
 									stack.pop()));
 				continue;
@@ -117,7 +117,7 @@ public class ExpressionParser {
 	 * 
 	 * @return The result of the calculation.
 	 */
-	private static Double calculate(String operator, double operand2, double operand1){
+	private static double calculate(String operator, double operand2, double operand1){
 		
 		switch(operator){
 			
@@ -137,7 +137,7 @@ public class ExpressionParser {
 				return Math.pow(operand1, operand2);
 			
 			default:			//case: anything else
-				return null;
+				return -1;	//TODO change to throw an exception
 		}
 	}
 	
