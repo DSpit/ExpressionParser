@@ -27,10 +27,10 @@ public class ExpressionParser {
 	public static final String EXPONENT = "^";
 	
 	public static final String[] OPERATORS = 	{ADDITION, 
-												SUBTRACTION, 
-												MULTIPLICATION, 
-												DIVISION, 
-												EXPONENT};
+							SUBTRACTION, 
+							MULTIPLICATION, 
+							DIVISION, 
+							EXPONENT};
 
 // Public Methods --------------------------------------------------------------- //
 	
@@ -44,12 +44,12 @@ public class ExpressionParser {
 	 */
 	public static double evaluate(ArrayDeque<String> expression){
 		
-		/* 						***NOTE***								*/
-		/* All numbers held within the stack are in reverse order. 		*/
-		/*																*/
+		/* 			***NOTE***				*/
+		/* All numbers held within the stack are in reverse order. 	*/
+		/*								*/
 		/* e.i.queue = [2,3,-] --> stack = [2,3] --> stack.pop() #1 = 3 */
-		/* 										 --> stack.pop() #2 = 2 */
-		/*																*/
+		/* 					 --> stack.pop() #2 = 2 */
+		/*								*/
 		
 		Stack<Double> stack = new Stack<Double>();
 		
@@ -61,8 +61,8 @@ public class ExpressionParser {
 				
 				//calculates the result of the operator and adds it to the stack
 				stack.push(ExpressionParser.calculate(expression.remove(), 
-														stack.pop(), 
-														stack.pop()));
+									stack.pop(), 
+									stack.pop()));
 				continue;
 			}
 			
@@ -127,7 +127,7 @@ public class ExpressionParser {
 			case SUBTRACTION: 		//case: -
 				return operand1 - operand2;
 			
-			case MULTIPLICATION:	//case: *
+			case MULTIPLICATION:		//case: *
 				return operand1 * operand2;
 				
 			case DIVISION: 			//case: /
@@ -136,7 +136,7 @@ public class ExpressionParser {
 			case EXPONENT: 			//case: ^
 				return Math.pow(operand1, operand2);
 			
-			default:				//case: anything else
+			default:			//case: anything else
 				return null;
 		}
 	}
