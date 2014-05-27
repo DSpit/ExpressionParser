@@ -18,7 +18,7 @@ import java.util.Stack;
  */
 public class ExpressionParser {
 	
-// Constants -------------------------------------------------------------------- //
+// Constants ----------------------------------------------------------------------------------- //
 	
 	public static final String ADDITION = "+";
 	public static final String SUBTRACTION = "-";
@@ -31,8 +31,12 @@ public class ExpressionParser {
 							MULTIPLICATION, 
 							DIVISION, 
 							EXPONENT};
+	
+	public static final String DECIMAL = ".";
+	public static final String OPEN_BRACKET = "(";
+	public static final String CLOSE_BRACKET = ")";
 
-// Public Methods --------------------------------------------------------------- //
+// Public Methods ------------------------------------------------------------------------------ //
 	
 	/**
 	 * Takes a mathematical expression in PostFix (Reverse-Polish) notation
@@ -86,7 +90,44 @@ public class ExpressionParser {
 	 * @return A PostFix representation of the expression in a queue.
 	 */
 	public static ArrayDeque<String> parse(String expression){
-		return null;	//TODO implement
+		
+		ArrayDeque<String> queue = new ArrayDeque<String>();
+		Stack<Double> numStack = new Stack<Double>();
+		Stack<String> opStack = new Stack<String>();
+		
+		//remove all spaces
+		expression = expression.replace(" ", "");
+		
+		//iterate through expression
+		for(int i = 0; i < expression.length(); ++i){
+			String token = String.valueOf(expression.charAt(i));
+			
+			//determine what type of token the current token is and take
+			//appropriate action
+			if(ExpressionParser.isOperator(token)){				//case: operator
+				
+			}else if(Character.isDigit(token.charAt(0)) ||
+					token.equals(ExpressionParser.DECIMAL)){	//case: digit
+				
+			}else if(token.equals(ExpressionParser.OPEN_BRACKET)){		//case: open bracket
+				
+			}else{								//case: everything else
+				//TODO throw error with an indicator to what character is invalid
+			}
+			
+		}
+		
+		//empty the operator stack
+		while(!opStack.isEmpty()){
+			
+		}
+		
+		//return queue only if entire equation has been successfully placed into queue
+		if(numStack.isEmpty()){
+			return queue;
+		}
+		
+		return null;//TODO throw error because not all numbers have been used (problems with the format of the expression)
 	}
 	
 	/**
@@ -105,7 +146,7 @@ public class ExpressionParser {
 		return ExpressionParser.evaluate(ExpressionParser.parse(expression));
 	}
 	
-// Private Methods -------------------------------------------------------------- //
+// Private Methods ----------------------------------------------------------------------------- //
 	
 	/**
 	 * Calculates the result of the two given operands using the given operator
