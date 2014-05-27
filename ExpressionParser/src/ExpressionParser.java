@@ -26,7 +26,7 @@ public class ExpressionParser {
 	 * PostFix (Reverse-Polish) notation.
 	 * 
 	 * 
-	 * @param expresson The String representation of the expression.
+	 * @param expression The String representation of the expression.
 	 * 
 	 * @return A PostFix representation of the expression in a queue.
 	 */
