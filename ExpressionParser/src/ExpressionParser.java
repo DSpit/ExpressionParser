@@ -46,7 +46,7 @@ public class ExpressionParser {
 	 * 
 	 * @return The result of the expression.
 	 */
-	public static double evaluate(ArrayDeque<String> expression){
+	public static double evaluatePostfix(ArrayDeque<String> expression){
 		
 		/* 			***NOTE***				*/
 		/* All numbers held within the stack are in reverse order. 	*/
@@ -103,6 +103,16 @@ public class ExpressionParser {
 			//appropriate action
 			if(ExpressionParser.isOperator(token)){				//case: operator
 				
+				//BEDMAS implementation. If operator has a higher priority then put in
+				//queue before adding the new operator to stack
+				if(!opStack.isEmpty() && ExpressionParser.getOperatorPriority(token) <=
+						ExpressionParser.getOperatorPriority(opStack.peek())){
+					
+				}
+				
+				//add operator to stack
+				opStack.push(token);
+				
 			}else if(ExpressionParser.isPartOfNumber(token)){		//case: digit or decimal
 				
 				//gets the full number within the string expression and updates the index
@@ -136,6 +146,8 @@ public class ExpressionParser {
 		return null;//TODO throw error because not all numbers have been used (problems with the format of the expression)
 	}
 	
+	
+	//TODO change this method to be more efficient that using both the parse and evaluate methods but still using stacks
 	/**
 	 * This method is more of a convenience than anything else, 
 	 * but it uses the {@link #parse} and {@link #evaluate} methods held within
@@ -149,7 +161,7 @@ public class ExpressionParser {
 	public static double parseAndEval(String expression){
 		
 		//parse and evaluate the expression in one go.
-		return ExpressionParser.evaluate(ExpressionParser.parse(expression));
+		return ExpressionParser.evaluatePostfix(ExpressionParser.parse(expression));
 	}
 	
 // Private Methods ----------------------------------------------------------------------------- //
@@ -259,5 +271,21 @@ public class ExpressionParser {
 		
 		return false;
 		
+	}
+	
+	/**
+	 * Checks the given operator against known operators and returns 
+	 * the level which it is defined at. Basically this method implements
+	 * the mathematical BEDMAS (PEDMAS) rule. The list of defined operators
+	 * should be the same as that of accepted operators, which is defined by 
+	 * the {@link ExpressionParser#OPERATORS} field.
+	 *
+	 * @param op Operator to be checked.
+	 * 
+	 * @return The priority level of the operator or -1 if the given operator
+	 * 		doesn't match any defined operators.
+	 */
+	private static int getOperatorPriority(String op){
+		return -1; //TODO implement
 	}
 }
