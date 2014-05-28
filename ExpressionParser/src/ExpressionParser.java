@@ -95,9 +95,6 @@ public class ExpressionParser {
 		Stack<Double> numStack = new Stack<Double>();
 		Stack<String> opStack = new Stack<String>();
 		
-		//remove all spaces
-		expression = expression.replace(" ", "");
-		
 		//iterate through expression
 		for(int i = 0; i < expression.length(); ++i){
 			String token = String.valueOf(expression.charAt(i));
@@ -106,10 +103,19 @@ public class ExpressionParser {
 			//appropriate action
 			if(ExpressionParser.isOperator(token)){				//case: operator
 				
-			}else if(Character.isDigit(token.charAt(0)) ||
-					token.equals(ExpressionParser.DECIMAL)){	//case: digit
+			}else if(ExpressionParser.isPartOfNumber(token)){		//case: digit or decimal
+				
+				//gets the full number within the string expression and updates the index
+				token = ExpressionParser.getFullNumber(expression, i);
+				i += token.length()-1;
+				
+				//add the number to the number stack
+				numStack.add(Double.parseDouble(token));	//TODO add error handle here in case token is an invalid number (example 2.3434.232)
 				
 			}else if(token.equals(ExpressionParser.OPEN_BRACKET)){		//case: open bracket
+				
+			}else if(token.equals(" ")){					//case: space
+				//ignore
 				
 			}else{								//case: everything else
 				//TODO throw error with an indicator to what character is invalid
@@ -183,13 +189,43 @@ public class ExpressionParser {
 	}
 	
 	/**
+	 * Obtains the fully fledged number in the expression starting at the given index within the
+	 * expression. This method does <b>NOT</b> assume the starting index is a number, and if it is
+	 * not, this method will return an empty string. <br><br><b>Note:</b> This method will return
+	 * an empty string if <code> index >= expression.length()</code>.
+	 *
+	 * @param expression The expression to get the number from
+	 * @param index The starting point within the expression.
+	 * 
+	 * @return The full number.
+	 */
+	private static String getFullNumber(String expression, int index){
+		
+		StringBuffer num = new StringBuffer(3);
+		
+		//iterates through the expression and checks if the current value of the string is
+		//considered part of a number
+		while(index < expression.length() &&
+				ExpressionParser.isPartOfNumber(String.valueOf(expression.charAt(index)))){
+			
+			//adds the number part to the return string
+			num.append(String.valueOf(expression.charAt(index)));
+			
+			//increment
+			++index;
+		}
+		
+		return num.toString();
+	}
+	
+	/**
 	 * Determines if the given token is considered a valid operator by
 	 * this class using this class' list of valid operators.
 	 *
 	 * @param token The String to be checked
 	 * 
 	 * @return This method returns <b>true</b> if the token is considered an
-	 * 			operator and returns <b>false</b> otherwise.
+	 * 		operator and returns <b>false</b> otherwise.
 	 */
 	private static boolean isOperator(String token){
 		
@@ -201,5 +237,27 @@ public class ExpressionParser {
 		}
 		
 		return false;
+	}
+	
+	/**
+	 * Determines whether the given token is a number or a decimal, 
+	 * hence part of a number.
+	 *
+	 * @param token The String to be checked.
+	 * 
+	 * @return This method returns <b>true</b> if the token is considered a 
+	 * 		a number or a decimal point and returns <b>false</b> 
+	 * 		otherwise.
+	 */
+	private static boolean isPartOfNumber(String token){
+		
+		//checks to see if the token is considered a digit or a decimal
+		if(Character.isDigit(token.charAt(0)) ||
+				token.equals(ExpressionParser.DECIMAL)){
+			return true;
+		}
+		
+		return false;
+		
 	}
 }
