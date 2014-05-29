@@ -135,7 +135,7 @@ public class ExpressionParser {
 		
 		//empty the operator stack
 		while(!opStack.isEmpty()){
-			
+			ExpressionParser.addToQueue(subEqStack, opStack, numStack);
 		}
 		
 		//returns the final post-fix queue only if there is only one queue left in the subEqStack and
