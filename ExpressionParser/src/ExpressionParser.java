@@ -91,6 +91,7 @@ public class ExpressionParser {
 	 */
 	public static ArrayDeque<String> parse(String expression){
 		
+		//data storage
 		Stack<ArrayDeque<String>> subEqStack = new Stack<ArrayDeque<String>>();
 		Stack<Double> numStack = new Stack<Double>();
 		Stack<String> opStack = new Stack<String>();
@@ -124,11 +125,20 @@ public class ExpressionParser {
 				
 			}else if(token.equals(ExpressionParser.OPEN_BRACKET)){		//case: open bracket
 				
+				//get the sub expression in the bracket (parenthesis) and updates the index
+				String subExpression = ExpressionParser.getSubExpression(expression, i);
+				i += subExpression.length();	//index is now at closing bracket
+				
+				//parse the sub expression and indicate that there is now a new sub expression in the stack
+				subEqStack.push(ExpressionParser.parse(subExpression));
+				numStack.push(null);
+				
 			}else if(token.equals(" ")){					//case: space
 				//ignore
 				
 			}else{								//case: everything else
 				//TODO throw error with an indicator to what character is invalid
+				System.out.println("Invalid token");
 			}
 			
 		}
@@ -252,7 +262,7 @@ public class ExpressionParser {
 	 */
 	private static String getFullNumber(String expression, int index){
 		
-		StringBuffer num = new StringBuffer(3);
+		StringBuffer num = new StringBuffer();
 		
 		//iterates through the expression and checks if the current value of the string is
 		//considered part of a number
@@ -267,6 +277,29 @@ public class ExpressionParser {
 		}
 		
 		return num.toString();
+	}
+	
+	/**
+	 * Obtains the string between an open and a close bracket. This method assumes that the
+	 * starting point is the open bracket and will skip it entirely.
+	 *
+	 * @param expression The full expression.
+	 * @param index The starting index.
+	 * 
+	 * @return The sub expression represented by the brackets.
+	 */
+	private static String getSubExpression(String expression, int index){
+		
+		StringBuffer str = new StringBuffer();
+		
+		++index; //excludes open bracket
+		
+		//iterate through expression	TODO add error handle if the index is out of range (no closing brackets found)
+		while(expression.charAt(index) != ')'){
+			str.append(String.valueOf(expression.charAt(index)));
+		}
+		
+		return str.toString();
 	}
 	
 	/**
