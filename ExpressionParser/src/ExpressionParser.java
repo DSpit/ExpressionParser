@@ -91,7 +91,7 @@ public class ExpressionParser {
 	 */
 	public static ArrayDeque<String> parse(String expression){
 		
-		ArrayDeque<String> queue = new ArrayDeque<String>();
+		Stack<ArrayDeque<String>> subEqStack = new Stack<ArrayDeque<String>>();
 		Stack<Double> numStack = new Stack<Double>();
 		Stack<String> opStack = new Stack<String>();
 		
@@ -105,9 +105,9 @@ public class ExpressionParser {
 				
 				//BEDMAS implementation. If operator has a higher priority then put in
 				//queue before adding the new operator to stack
-				if(!opStack.isEmpty() && ExpressionParser.getOperatorPriority(token) <=
+				while(!opStack.isEmpty() && ExpressionParser.getOperatorPriority(token) <=
 						ExpressionParser.getOperatorPriority(opStack.peek())){
-					
+					ExpressionParser.addToQueue(subEqStack, opStack, numStack);
 				}
 				
 				//add operator to stack
@@ -138,9 +138,10 @@ public class ExpressionParser {
 			
 		}
 		
-		//return queue only if entire equation has been successfully placed into queue
-		if(numStack.isEmpty()){
-			return queue;
+		//returns the final post-fix queue only if there is only one queue left in the subEqStack and
+		//the final number stack contains the final null placeholder. TODO must make this work for stupidity like "3" <- one number as the expression
+		if(numStack.size() == 1 && subEqStack.size() == 1){	
+			return subEqStack.pop();
 		}
 		
 		return null;//TODO throw error because not all numbers have been used (problems with the format of the expression)
@@ -165,6 +166,44 @@ public class ExpressionParser {
 	}
 	
 // Private Methods ----------------------------------------------------------------------------- //
+	
+	/**
+	 * This method takes 2 values from the number stack and 1 value from the operator stack
+	 * and combines them into a PostFix queue and adds that queue to the queue stack. If one of the
+	 * values for the numbers ends up being a <b>null</b>, this method will take one whole
+	 * queue and add it to the new queue as if it where a number.
+	 *
+	 * @param queueStack The Stack of PostFix sub queues.
+	 * @param opStack The operator stack to take the operator from.
+	 * @param numStack The number stack to take the numbers from.
+	 */
+	private static void addToQueue(Stack<ArrayDeque<String>> queueStack, 
+			Stack<String> opStack, Stack<Double> numStack){
+		
+		ArrayDeque<String> queue = new ArrayDeque<String>();
+		
+		//takes the necessary values from the proper stacks	TODO error could be thrown here as stacks can be empty
+		String operator = opStack.pop();
+		Double[] operands = {numStack.pop(), numStack.pop()};	//index 0 = operand2 , index 1 = operand1
+		
+		//add proper operands (or sub expressions) to the queue
+		for(int i = 1; i >= 0; --i){
+			if(operands[i] == null){
+				queue.addAll(queueStack.pop());
+			}else{
+				queue.add(String.valueOf(operands[i]));
+			}
+		}
+		
+		//adds operator to queue
+		queue.add(operator);
+		
+		//indicate that there is a sub expression in the queueStack
+		numStack.push(null);
+		
+		//add queue to queueStack
+		queueStack.push(queue);
+	}
 	
 	/**
 	 * Calculates the result of the two given operands using the given operator
