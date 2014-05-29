@@ -138,7 +138,7 @@ public class ExpressionParser {
 				
 			}else{								//case: everything else
 				//TODO throw error with an indicator to what character is invalid
-				System.out.println("Invalid token");
+				System.out.println("Invalid token:" + token);
 			}
 			
 		}
@@ -291,12 +291,12 @@ public class ExpressionParser {
 	private static String getSubExpression(String expression, int index){
 		
 		StringBuffer str = new StringBuffer();
-		
 		++index; //excludes open bracket
 		
 		//iterate through expression	TODO add error handle if the index is out of range (no closing brackets found)
 		while(expression.charAt(index) != ')'){
 			str.append(String.valueOf(expression.charAt(index)));
+			++index;
 		}
 		
 		return str.toString();
@@ -351,13 +351,39 @@ public class ExpressionParser {
 	 * the mathematical BEDMAS (PEDMAS) rule. The list of defined operators
 	 * should be the same as that of accepted operators, which is defined by 
 	 * the {@link ExpressionParser#OPERATORS} field.
+	 * 
+	 * <br><br><b>Priority:</b>
+	 * 	<ul>
+	 * 		<li>^ = 2
+	 * 		<li>* , / = 1
+	 * 		<li>+, - = 0
+	 * 	</ul>
 	 *
 	 * @param op Operator to be checked.
 	 * 
-	 * @return The priority level of the operator or -1 if the given operator
-	 * 		doesn't match any defined operators.
+	 * @return The priority level of the operator.
 	 */
 	private static int getOperatorPriority(String op){
-		return -1; //TODO implement
+		
+		//checks what operator it is and returns proper priority
+		switch(op){
+			case EXPONENT:
+				return 2;
+				
+			case MULTIPLICATION:
+				return 1;
+				
+			case DIVISION:
+				return 1;
+				
+			case ADDITION:
+				return 0;
+				
+			case SUBTRACTION:
+				return 0;
+				
+			default:
+				return -1;	//TODO change to throw an error
+		}
 	}
 }
