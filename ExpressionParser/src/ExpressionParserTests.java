@@ -199,7 +199,7 @@ public class ExpressionParserTests {
 		
 		//testing general long expressions
 		System.out.println("23. 2+3*32/64^(1/2)-18*2");
-		e = "[2.0, 3.0, 32.0, 64.0, 1.0, 2.0, /, ^, /, +, 18.0, 2.0, *, -]";
+		e = "[2.0, 3.0, 32.0, *, 64.0, 1.0, 2.0, /, ^, /, +, 18.0, 2.0, *, -]";
 		r = ExpressionParser.parse("2+3*32/64^(1/2)-18*2").toString();
 		System.out.println("Expected: " + e);
 		System.out.println("Result: " + r);
@@ -207,7 +207,7 @@ public class ExpressionParserTests {
 		System.out.println("\n");
 		
 		System.out.println("24. ((3*(12+2-8))/((24+6)/10))^(1/3)");
-		e = "[3.0, 12.0, 2.0, +, 8.0, -, *, 24.0, 6.0, +, 10.0, /, /, 1.0, 3.0, /, ^]";
+		e = "[3.0, 12.0, 2.0, +, 8.0, -, *, 24.0, 6.0, +, 10.0, /, 1.0, 3.0, /, ^, /]";
 		r = ExpressionParser.parse("(3*(12+2-8))/((24+6)/10)^(1/3)").toString();
 		System.out.println("Expected: " + e);
 		System.out.println("Result: " + r);

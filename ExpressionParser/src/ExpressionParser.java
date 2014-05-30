@@ -92,7 +92,7 @@ public class ExpressionParser {
 	public static ArrayDeque<String> parse(String expression){
 		
 		//data storage
-		ArrayDeque<ArrayDeque<String>> subEqStack = new ArrayDeque<ArrayDeque<String>>();
+		Stack<ArrayDeque<String>> subEqStack = new Stack<ArrayDeque<String>>();
 		Stack<Double> numStack = new Stack<Double>();
 		Stack<String> opStack = new Stack<String>();
 		
@@ -130,7 +130,7 @@ public class ExpressionParser {
 				i += subExpression.length()-1;	//index is now at closing bracket
 				
 				//parse the sub expression and indicate that there is now a new sub expression in the stack
-				subEqStack.add(ExpressionParser.parse(
+				subEqStack.push(ExpressionParser.parse(
 						subExpression.substring(1,subExpression.length()-1)));
 				numStack.push(null);
 				
@@ -164,7 +164,7 @@ public class ExpressionParser {
 		//returns the final post-fix queue only if there is only one queue left in the subEqStack and
 		//the final number stack contains the final null placeholder. TODO must make this work for stupidity like "3" <- one number as the expression
 		if(numStack.size() == 1 && subEqStack.size() == 1){	
-			return subEqStack.remove();
+			return subEqStack.pop();
 		}
 		
 		return null;//TODO throw error because not all numbers have been used (problems with the format of the expression)
@@ -200,32 +200,44 @@ public class ExpressionParser {
 	 * @param opStack The operator stack to take the operator from.
 	 * @param numStack The number stack to take the numbers from.
 	 */
-	private static void addToQueue(ArrayDeque<ArrayDeque<String>> queueStack, 
+	private static void addToQueue(Stack<ArrayDeque<String>> queueStack, 
 			Stack<String> opStack, Stack<Double> numStack){
 		
 		ArrayDeque<String> queue = new ArrayDeque<String>();
 		
 		//takes the necessary values from the proper stacks	TODO error could be thrown here as stacks can be empty
 		String operator = opStack.pop();
-		Double[] operands = {numStack.pop(), numStack.pop()};	//index 0 = operand2 , index 1 = operand1
+		ArrayDeque<String> operand1 = new ArrayDeque<String>();
+		ArrayDeque<String> operand2 = new ArrayDeque<String>();
 		
-		//add proper operands (or sub expressions) to the queue
-		for(int i = 1; i >= 0; --i){
-			if(operands[i] == null){
-				queue.addAll(queueStack.remove());
-			}else{
-				queue.add(String.valueOf(operands[i]));
-			}
+		//puts the correct value (either a sub expression or the number) into the operand variable
+		if(numStack.peek() == null){
+			operand2.addAll(queueStack.pop());
+			numStack.pop();	//removes "null" from numStack
+		}else{
+			operand2.add(String.valueOf(numStack.pop()));
 		}
 		
-		//adds operator to queue
+		//couldn't think of a more efficient way of doing it so same as the 
+		//code a couple of lines above this but for operand1
+		if(numStack.peek() == null){
+			operand1.addAll(queueStack.pop());
+			numStack.pop();	//removes "null" from numStack
+		}else{
+			operand1.add(String.valueOf(numStack.pop()));
+		}
+		
+		
+		//add operands and operators to queue
+		queue.addAll(operand1);
+		queue.addAll(operand2);
 		queue.add(operator);
 		
 		//indicate that there is a sub expression in the queueStack
 		numStack.push(null);
 		
 		//add queue to queueStack
-		queueStack.add(queue);
+		queueStack.push(queue);
 	}
 	
 	/**
