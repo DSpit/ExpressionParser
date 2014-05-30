@@ -162,9 +162,24 @@ public class ExpressionParser {
 		}
 		
 		//returns the final post-fix queue only if there is only one queue left in the subEqStack and
-		//the final number stack contains the final null placeholder. TODO must make this work for stupidity like "3" <- one number as the expression
+		//the final number stack contains the final null placeholder.
 		if(numStack.size() == 1 && subEqStack.size() == 1){	
 			return subEqStack.pop();
+		}
+		
+		//handles cases where there is only one number in the expression
+		if(numStack.size() == 1 && subEqStack.isEmpty() &&
+				numStack.peek() != null){
+			ArrayDeque<String> tempQueue = new ArrayDeque<String>();
+			tempQueue.add(String.valueOf(numStack.pop()));
+			return tempQueue;
+		}
+		
+		//handles empty expression
+		if(numStack.isEmpty() && subEqStack.isEmpty()){
+			ArrayDeque<String> tempQueue = new ArrayDeque<String>();
+			tempQueue.add("0.0");
+			return tempQueue;
 		}
 		
 		return null;//TODO throw error because not all numbers have been used (problems with the format of the expression)
