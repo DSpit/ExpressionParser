@@ -142,11 +142,23 @@ public class ExpressionParser {
 				System.out.println("Invalid token:" + token);
 			}
 			
+//			//DEBUG
+//			System.out.println("SubEqStack: " + subEqStack);
+//			System.out.println("numStack: " + numStack);
+//			System.out.println("opStack: " + opStack);
+//			System.out.println();
+			
 		}
 		
 		//empty the operator stack
 		while(!opStack.isEmpty()){
 			ExpressionParser.addToQueue(subEqStack, opStack, numStack);
+			
+//			//DEBUG
+//			System.out.println("SubEqStack: " + subEqStack);
+//			System.out.println("numStack: " + numStack);
+//			System.out.println("opStack: " + opStack);
+//			System.out.println();
 		}
 		
 		//returns the final post-fix queue only if there is only one queue left in the subEqStack and
