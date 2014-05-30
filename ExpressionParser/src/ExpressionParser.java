@@ -127,10 +127,11 @@ public class ExpressionParser {
 				
 				//get the sub expression in the bracket (parenthesis) and updates the index
 				String subExpression = ExpressionParser.getSubExpression(expression, i);
-				i += subExpression.length();	//index is now at closing bracket
+				i += subExpression.length()-1;	//index is now at closing bracket
 				
 				//parse the sub expression and indicate that there is now a new sub expression in the stack
-				subEqStack.push(ExpressionParser.parse(subExpression));
+				subEqStack.push(ExpressionParser.parse(
+						subExpression.substring(1,subExpression.length()-1)));
 				numStack.push(null);
 				
 			}else if(token.equals(" ")){					//case: space
@@ -280,8 +281,8 @@ public class ExpressionParser {
 	}
 	
 	/**
-	 * Obtains the string between an open and a close bracket. This method assumes that the
-	 * starting point is the open bracket and will skip it entirely.
+	 * Obtains the string between an open and a close bracket. The start index is
+	 * included in the returned sub expression and so is the closing bracket
 	 *
 	 * @param expression The full expression.
 	 * @param index The starting index.
@@ -290,13 +291,40 @@ public class ExpressionParser {
 	 */
 	private static String getSubExpression(String expression, int index){
 		
-		StringBuffer str = new StringBuffer();
-		++index; //excludes open bracket
+		//makes sure that start index is an open bracket
+		if(!String.valueOf(expression.charAt(index)).equals(ExpressionParser.OPEN_BRACKET)){
+			//TODO throw error
+		}
 		
-		//iterate through expression	TODO add error handle if the index is out of range (no closing brackets found)
-		while(expression.charAt(index) != ')'){
-			str.append(String.valueOf(expression.charAt(index)));
-			++index;
+		StringBuffer str = new StringBuffer();
+		int openBracketCount = 0;
+		
+		//iterate through expression
+		while(true){
+			
+			//for easy access
+			String temp = String.valueOf(expression.charAt(index));	//TODO add error handle if the index is out of range (no closing brackets found)
+			
+			if(temp.equals(ExpressionParser.OPEN_BRACKET)){
+				str.append(temp);
+				++openBracketCount;	//compensates for open brackets found in sub expression
+				
+			}else if(temp.equals(ExpressionParser.CLOSE_BRACKET)){
+				//takes appropriate action based on value of openBracketCount
+				if(openBracketCount == 1){
+					str.append(temp);
+					break;	//the sub expression has been found
+					
+				}else{
+					str.append(temp);
+					--openBracketCount;	//update the number of unmatched open brackets
+				}
+			}else{
+				str.append(temp);	//adds the value to the sub expression
+			}
+			
+			//increment index
+			++index;	
 		}
 		
 		return str.toString();
