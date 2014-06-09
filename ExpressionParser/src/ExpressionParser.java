@@ -32,6 +32,12 @@ public class ExpressionParser {
 							DIVISION, 
 							EXPONENT};
 	
+	public static final String NEGATIVE = "--";
+	public static final String POSITIVE = "++";
+	
+	public static final String[] UNARY_OPERATORS = 	{NEGATIVE,
+							POSITIVE};
+	
 	public static final String DECIMAL = ".";
 	public static final String OPEN_BRACKET = "(";
 	public static final String CLOSE_BRACKET = ")";
@@ -104,6 +110,13 @@ public class ExpressionParser {
 			//appropriate action
 			if(ExpressionParser.isOperator(token)){				//case: operator
 				
+				//checks to see if the current operator is an accepted unary operator (+, -)
+				if((token.equals(ExpressionParser.ADDITION) || token.equals(ExpressionParser.SUBTRACTION)) &&
+					(ExpressionParser.isOperator(ExpressionParser.getNonSpaceToken(expression, i)) ||
+					(ExpressionParser.getNonSpaceToken(expression, i) == null))){
+					token += token;	//doubles up the operator to indicate that it is a unary operator
+				}
+				
 				//BEDMAS implementation. If operator has a higher priority then put in
 				//queue before adding the new operator to stack
 				while(!opStack.isEmpty() && ExpressionParser.getOperatorPriority(token) <=
@@ -133,9 +146,6 @@ public class ExpressionParser {
 				subEqStack.push(ExpressionParser.parse(
 						subExpression.substring(1,subExpression.length()-1)));
 				numStack.push(null);
-				
-			}else if(token.equals(" ")){					//case: space
-				//ignore
 				
 			}else{								//case: everything else
 				//TODO throw error with an indicator to what character is invalid
@@ -216,7 +226,7 @@ public class ExpressionParser {
 	 * @param numStack The number stack to take the numbers from.
 	 */
 	private static void addToQueue(Stack<ArrayDeque<String>> queueStack, 
-			Stack<String> opStack, Stack<Double> numStack){
+			Stack<String> opStack, Stack<Double> numStack){	//TODO add unary operator handle
 		
 		ArrayDeque<String> queue = new ArrayDeque<String>();
 		
@@ -254,6 +264,8 @@ public class ExpressionParser {
 		//add queue to queueStack
 		queueStack.push(queue);
 	}
+	
+	//TODO add unary operator calculate method
 	
 	/**
 	 * Calculates the result of the two given operands using the given operator
@@ -317,6 +329,26 @@ public class ExpressionParser {
 		}
 		
 		return num.toString();
+	}
+	
+	/**
+	 * Finds the nearest non space token prior to the given index.
+	 *
+	 * @param expression The expression to comb through.
+	 * @param index The index to start from.
+	 * 
+	 * @return The String non-space token or <b>null</b> if no token was found.
+	 */
+	private static String getNonSpaceToken(String expression, int index){
+		
+		if(index == -1){
+			return null;
+		
+		}else if(expression.charAt(index) != ' '){
+			return String.valueOf(expression.charAt(index));
+		}
+		
+		return ExpressionParser.getNonSpaceToken(expression, --index);
 	}
 	
 	/**
@@ -390,6 +422,8 @@ public class ExpressionParser {
 		return false;
 	}
 	
+	//TODO add isUnaryOperator()
+	
 	/**
 	 * Determines whether the given token is a number or a decimal, 
 	 * hence part of a number.
@@ -434,6 +468,12 @@ public class ExpressionParser {
 		
 		//checks what operator it is and returns proper priority
 		switch(op){
+			case NEGATIVE:
+				return 3;
+				
+			case POSITIVE:
+				return 3;
+				
 			case EXPONENT:
 				return 2;
 				
