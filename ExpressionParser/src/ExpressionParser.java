@@ -25,8 +25,9 @@ public class ExpressionParser {
 	public static final String MULTIPLICATION = "*";
 	public static final String DIVISION = "/";
 	public static final String EXPONENT = "^";
+	public static final String LOG = "log";
 	
-	public static final String[] OPERATORS = 	{ADDITION, 
+	public static final String[] BINARY_OPERATORS = {ADDITION, 
 							SUBTRACTION, 
 							MULTIPLICATION, 
 							DIVISION, 
@@ -34,9 +35,35 @@ public class ExpressionParser {
 	
 	public static final String NEGATIVE = "--";
 	public static final String POSITIVE = "++";
+	public static final String COS = "cos";
+	public static final String SIN = "sin";
+	public static final String TAN = "tan";
+	public static final String ARCCOS = "arccos";
+	public static final String ARCSIN = "arcsin";
+	public static final String ARCTAN = "arctan";
 	
 	public static final String[] UNARY_OPERATORS = 	{NEGATIVE,
-							POSITIVE};
+							POSITIVE,
+							COS,
+							SIN,
+							TAN,
+							ARCCOS,
+							ARCSIN,
+							ARCTAN};
+	
+	public static final String[] OPERATORS = 	{ADDITION, 
+							SUBTRACTION, 
+							MULTIPLICATION, 
+							DIVISION, 
+							EXPONENT,
+							NEGATIVE,
+							POSITIVE,
+							COS,
+							SIN,
+							TAN,
+							ARCCOS,
+							ARCSIN,
+							ARCTAN};
 	
 	public static final String DECIMAL = ".";
 	public static final String OPEN_BRACKET = "(";
@@ -83,6 +110,69 @@ public class ExpressionParser {
 		
 		//return result
 		return stack.pop();
+	}
+	
+	/**
+	 * Determines if the given token is considered a valid operator by
+	 * this class using this class' list of valid operators.
+	 *
+	 * @param token The String to be checked.
+	 * 
+	 * @return This method returns <b>true</b> if the token is considered an
+	 * 		operator and returns <b>false</b> otherwise.
+	 */
+	public static boolean isOperator(String token){
+		
+		//checks if the token matches any of the accepted operators
+		for(int i = 0; i < OPERATORS.length; ++i){
+			if(token.equals(OPERATORS[i])){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Determines if the given token is considered a unary operator by 
+	 * this class using this class' list of valid unary operators.
+	 *
+	 *@param token The String to be checked.
+	 *
+	 * @return This method returns <b>true</b> if the token is considered a
+	 * 		unary operator and returns <b>false</b> otherwise.
+	 */
+	public static boolean isUnaryOperator(String token){
+		
+		//checks if the token matches any of the accepted unary operators
+		for(int i = 0; i < UNARY_OPERATORS.length; ++i){
+			if(token.equals(UNARY_OPERATORS[i])){
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Determines if the given token is considered a binary operator by 
+	 * this class using this class' list of valid binary operators.
+	 *
+	 *@param token The String to be checked.
+	 *
+	 * @return This method returns <b>true</b> if the token is considered a
+	 * 		binary operator and returns <b>false</b> otherwise.
+	 */
+	public static boolean isBinaryOperator(String token){
+		
+		//checks if the token matches any of the accepted binary operators
+		for(int i = 0; i < BINARY_OPERATORS.length; ++i){
+			if(token.equals(BINARY_OPERATORS[i])){
+				return true;
+			}
+		}
+		
+		return false;
 	}
 	
 	/**
@@ -195,8 +285,6 @@ public class ExpressionParser {
 		return null;//TODO throw error because not all numbers have been used (problems with the format of the expression)
 	}
 	
-	
-	//TODO change this method to be more efficient that using both the parse and evaluate methods but still using stacks
 	/**
 	 * This method is more of a convenience than anything else, 
 	 * but it uses the {@link #parse} and {@link #evaluate} methods held within
@@ -207,7 +295,7 @@ public class ExpressionParser {
 	 * 
 	 * @return The result of the expression.
 	 */
-	public static double parseAndEval(String expression){
+	public static double parseAndEval(String expression){ //TODO change this method to be more efficient that using both the parse and evaluate methods but still using stacks
 		
 		//parse and evaluate the expression in one go.
 		return ExpressionParser.evaluatePostfix(ExpressionParser.parse(expression));
@@ -400,29 +488,6 @@ public class ExpressionParser {
 		
 		return str.toString();
 	}
-	
-	/**
-	 * Determines if the given token is considered a valid operator by
-	 * this class using this class' list of valid operators.
-	 *
-	 * @param token The String to be checked
-	 * 
-	 * @return This method returns <b>true</b> if the token is considered an
-	 * 		operator and returns <b>false</b> otherwise.
-	 */
-	private static boolean isOperator(String token){
-		
-		//checks if the token matches any of the accepted operators
-		for(int i = 0; i < OPERATORS.length; ++i){
-			if(token.equals(OPERATORS[i])){
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	//TODO add isUnaryOperator()
 	
 	/**
 	 * Determines whether the given token is a number or a decimal, 
